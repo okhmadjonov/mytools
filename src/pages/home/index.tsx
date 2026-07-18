@@ -21,7 +21,6 @@ import {
   FiTerminal,
   FiUpload,
   FiDownload,
-  FiCloud,
 } from "react-icons/fi";
 import type { LayoutContextType, Snippet } from "../../components/Layout";
 import styles from "./Home.module.scss";
@@ -63,16 +62,13 @@ const INITIAL_MOCK_SNIPPETS: Snippet[] = [
 
 const Home = () => {
   const { t } = useTranslation();
-  const { snippets, saveSnippets, categories, binId, updateBinId, isLoading } =
+  const { snippets, saveSnippets, categories, isLoading } =
     useOutletContext<LayoutContextType>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
-  const [isSyncOpen, setIsSyncOpen] = useState(false);
-  const [inputBinId, setInputBinId] = useState("");
-  const [isBinIdCopied, setIsBinIdCopied] = useState(false);
 
   const activeCategory = searchParams.get("category") || "all";
   const searchQuery = searchParams.get("search") || "";
@@ -227,40 +223,7 @@ const Home = () => {
     return false; // prevent upload
   };
 
-  const handleConnectBin = async () => {
-    if (!inputBinId.trim()) {
-      message.error("Please enter a valid Bin ID");
-      return;
-    }
-    try {
-      const res = await fetch(`https://api.npoint.io/${inputBinId}`);
-      if (!res.ok) throw new Error("Bin not found");
-      const data = await res.json();
-      const loadedSnippets = Array.isArray(data)
-        ? data
-        : (data && data.contents && Array.isArray(data.contents) ? data.contents : null);
 
-      if (loadedSnippets) {
-        updateBinId(inputBinId);
-        saveSnippets(loadedSnippets, false);
-        message.success("Successfully synced cloud bin!");
-        setIsSyncOpen(false);
-      } else {
-        message.error("Invalid cloud bin structure.");
-      }
-    } catch (err) {
-      message.error("Failed to link cloud bin. Check the ID.");
-    }
-  };
-
-  const handleCopyBinId = () => {
-    if (binId) {
-      navigator.clipboard.writeText(binId);
-      setIsBinIdCopied(true);
-      message.success("Sync Bin ID copied!");
-      setTimeout(() => setIsBinIdCopied(false), 2000);
-    }
-  };
 
   const filteredSnippets = snippets.filter((s) => {
     const matchesCategory =
@@ -316,14 +279,6 @@ const Home = () => {
         </div>
 
         <div className={styles.pageActions}>
-          <Button
-            icon={<FiCloud />}
-            onClick={() => setIsSyncOpen(true)}
-            className={styles.actionBtn}
-          >
-            Sync
-          </Button>
-
           <Upload beforeUpload={beforeUpload} showUploadList={false}>
             <Button icon={<FiUpload />} className={styles.actionBtn}>
               {t("import")}
@@ -436,66 +391,6 @@ const Home = () => {
       {filteredSnippets.length === 0 && (
         <div className={styles.emptyState}>{t("noSnippets")}</div>
       )}
-
-      <Modal
-        title="Cloud Sync Settings"
-        open={isSyncOpen}
-        onCancel={() => setIsSyncOpen(false)}
-        footer={null}
-        destroyOnClose
-        className={styles.modal}
-        styles={{
-          mask: {
-            backdropFilter: "blur(4px)",
-          },
-        }}
-      >
-        <div className={styles.syncModalContent}>
-          <div className={styles.syncSection}>
-            <p className={styles.syncHelpText}>
-              Copy your Cloud ID to load these snippets on another computer.
-            </p>
-            <div className={styles.syncIdRow}>
-              <Input
-                value={binId || "Generating..."}
-                disabled
-                className={styles.modalInput}
-                style={{ flex: 1 }}
-              />
-              <Button
-                icon={isBinIdCopied ? <FiCheck /> : <FiCopy />}
-                onClick={handleCopyBinId}
-                disabled={!binId}
-                className={styles.syncCopyBtn}
-              />
-            </div>
-          </div>
-
-          <hr className={styles.divider} />
-
-          <div className={styles.syncSection}>
-            <p className={styles.syncHelpText}>
-              To sync from another computer, paste its Cloud Sync ID below:
-            </p>
-            <div className={styles.syncInputRow}>
-              <Input
-                placeholder="Enter Cloud Sync ID..."
-                value={inputBinId}
-                onChange={(e) => setInputBinId(e.target.value)}
-                className={styles.modalInput}
-                style={{ flex: 1 }}
-              />
-              <Button
-                type="primary"
-                onClick={handleConnectBin}
-                className={styles.saveBtn}
-              >
-                Link & Sync
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
 
       <Modal
         title={editingSnippet ? t("editSnippet") : t("addSnippet")}
