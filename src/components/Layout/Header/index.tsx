@@ -79,10 +79,6 @@ const Header = ({ onToggleMenu }: HeaderProps) => {
       </div>
 
       <div className={styles.rightSection}>
-        <div className={styles.headerShortcuts}>
-          <kbd className={styles.kbdKey}>Ctrl</kbd> + <kbd className={styles.kbdKey}>N</kbd>
-        </div>
-
         <div className={styles.cloudStatus}>
           <span className={styles.statusDot}></span>
           <span className={styles.statusText}>Cloud Vault: Connected</span>

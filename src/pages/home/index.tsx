@@ -295,11 +295,6 @@ const Home = ({ category: propCategory }: HomeProps) => {
           searchInput.select();
         }
       }
-
-      if (e.key.toLowerCase() === "n" || (e.ctrlKey && e.key.toLowerCase() === "n")) {
-        e.preventDefault();
-        handleAddClick();
-      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
