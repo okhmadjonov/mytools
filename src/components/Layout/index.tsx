@@ -220,6 +220,7 @@ const Layout = () => {
       <div className={styles.mainLayout}>
         <Sidebar
           categories={categories}
+          snippets={snippets}
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
           onAddCategory={addCategory}

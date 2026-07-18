@@ -18,20 +18,46 @@ import {
 } from "react-icons/fi";
 import { FaDocker, FaLaptopCode, FaReact, FaCoffee, FaPython, FaCode } from "react-icons/fa";
 import styles from "./Sidebar.module.scss";
+import type { Snippet } from "../index";
+import staticSnippets from "../../../data/staticSnippets.json";
 
 interface SidebarProps {
   categories: string[];
+  snippets: Snippet[]; // Strongly typed to Snippet[]
   isOpen: boolean;
   onClose: () => void;
   onAddCategory: (newCat: string) => void;
   onDeleteCategory: (cat: string) => void;
 }
 
-const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory }: SidebarProps) => {
+const Sidebar = ({ categories, snippets, isOpen, onClose, onAddCategory, onDeleteCategory }: SidebarProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [filterQuery, setFilterQuery] = useState("");
   const [newCatInput, setNewCatInput] = useState("");
+
+  const getSnippetCount = (catName: string) => {
+    const combined = [
+      ...staticSnippets,
+      ...snippets.filter((s) => !staticSnippets.some((st) => st.id === s.id)),
+    ];
+    const lowerCat = catName.toLowerCase();
+    if (lowerCat === "all") {
+      return combined.length;
+    }
+    if (lowerCat === "starred") {
+      const stored = localStorage.getItem("dev_starred_ids");
+      const ids = stored ? JSON.parse(stored) : [];
+      return ids.length;
+    }
+    // Handle vs-code vs vscode mapping
+    if (lowerCat === "vs code" || lowerCat === "vscode") {
+      return combined.filter(
+        (s) => s.category.toLowerCase() === "vs code" || s.category.toLowerCase() === "vscode"
+      ).length;
+    }
+    return combined.filter((s) => s.category.toLowerCase() === lowerCat).length;
+  };
 
   const DEFAULT_MAIN_CATEGORIES = [
     "git",
@@ -229,6 +255,7 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
               {getCategoryIcon("all")}
               <span className={styles.repoName}>Bosh sahifa</span>
             </div>
+            <span className={styles.countBadge}>{getSnippetCount("all")}</span>
           </li>
 
           {/* Starred */}
@@ -240,6 +267,7 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
               <FiStar className={styles.categoryIcon} style={{ color: activeCategory === "starred" ? "#ffc107" : "#7d8590" }} />
               <span className={styles.repoName}>Tanlanganlar</span>
             </div>
+            <span className={styles.countBadge}>{getSnippetCount("starred")}</span>
           </li>
 
           {/* Core static hierarchical items */}
@@ -258,14 +286,19 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
                     {item.icon}
                     <span className={styles.repoName}>{item.name}</span>
                   </div>
-                  {hasChildren && (
-                    <span className={styles.chevronIconWrapper}>
-                      {isExpanded ? (
-                        <FiChevronDown className={styles.chevronIcon} />
-                      ) : (
-                        <FiChevronRight className={styles.chevronIcon} />
-                      )}
-                    </span>
+                  {hasChildren ? (
+                    <div className={styles.categoryItemRight}>
+                      <span className={styles.countBadge}>{getSnippetCount(item.name)}</span>
+                      <span className={styles.chevronIconWrapper}>
+                        {isExpanded ? (
+                          <FiChevronDown className={styles.chevronIcon} />
+                        ) : (
+                          <FiChevronRight className={styles.chevronIcon} />
+                        )}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className={styles.countBadge}>{getSnippetCount(item.name)}</span>
                   )}
                 </div>
 
@@ -287,8 +320,11 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
                           }`}
                           onClick={() => handleCategoryClick(child.name)}
                         >
-                          {child.icon}
-                          <span className={styles.childName}>{child.name}</span>
+                          <div className={styles.childItemLeft}>
+                            {child.icon}
+                            <span className={styles.childName}>{child.name}</span>
+                          </div>
+                          <span className={styles.countBadge}>{getSnippetCount(child.name)}</span>
                         </li>
                       );
                     })}
@@ -311,16 +347,19 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
                 {getCategoryIcon(cat)}
                 <span className={styles.repoName}>{cat}</span>
               </div>
-              <button
-                className={styles.deleteCategoryBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteCategory(cat);
-                }}
-                title="Delete category"
-              >
-                <FiX />
-              </button>
+              <div className={styles.categoryItemRight}>
+                <span className={styles.countBadge}>{getSnippetCount(cat)}</span>
+                <button
+                  className={styles.deleteCategoryBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteCategory(cat);
+                  }}
+                  title="Delete category"
+                >
+                  <FiX />
+                </button>
+              </div>
             </li>
           ))}
         </ul>

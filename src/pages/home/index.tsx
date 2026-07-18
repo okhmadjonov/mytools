@@ -470,18 +470,16 @@ const Home = ({ category: propCategory }: HomeProps) => {
                   <button
                     onClick={() => toggleStar(snippet.id)}
                     className={styles.starIconBtn}
-                    title={isStarred ? "Tanlanganlardan olib tashlash" : "Tanlanganlarga qo'shish"}
+                    data-tooltip={isStarred ? "Tanlanganlardan olib tashlash" : "Tanlanganlarga qo'shish"}
                   >
                     {isStarred ? <FaStar style={{ color: "#ffc107" }} /> : <FiStar />}
                   </button>
-
-
 
                   {/* Download Code Button */}
                   <button
                     onClick={() => handleDownloadFile(snippet)}
                     className={styles.downloadFileBtn}
-                    title="Fayl ko'rinishida yuklab olish"
+                    data-tooltip="Fayl ko'rinishida yuklab olish"
                   >
                     <FiDownload />
                   </button>
@@ -489,6 +487,7 @@ const Home = ({ category: propCategory }: HomeProps) => {
                   <button
                     onClick={() => handleCopy(snippet.code, snippet.id)}
                     className={styles.starBtn}
+                    data-tooltip={copiedId === snippet.id ? "Nusxalandi!" : "Kodni nusxalash"}
                   >
                     {copiedId === snippet.id ? (
                       <>
