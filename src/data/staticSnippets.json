@@ -115,5 +115,50 @@
     "category": "Other",
     "tags": ["readme", "markdown", "template", "other"],
     "createdAt": 1784365000012
+  },
+  {
+    "id": "static-react-setup",
+    "title": "ReactJS: Vite + React Setup & Router Integration",
+    "description": "Vite yordamida React loyihasini yaratish va React Router DOM kutubxonasini sozlash qo'llanmasi.",
+    "code": "# 1. Loyihani yaratish (Vite + React + TS)\nnpm create vite@latest my-app -- --template react-ts\ncd my-app\nnpm install\n\n# 2. React Router o'rnatish\nnpm install react-router-dom\n\n# 3. Router sozlamalari (src/main.tsx)\nimport React from 'react'\nimport ReactDOM from 'react-dom/client'\nimport { BrowserRouter } from 'react-router-dom'\nimport App from './App'\n\nReactDOM.createRoot(document.getElementById('root')!).render(\n  <React.StrictMode>\n    <BrowserRouter>\n      <App />\n    </BrowserRouter>\n  </React.StrictMode>\n)",
+    "category": "ReactJS",
+    "tags": ["react", "router", "setup", "vite"],
+    "createdAt": 1784365000013
+  },
+  {
+    "id": "static-aralash-css",
+    "title": "Aralash: Basic CSS Reset & Global Styling Rules",
+    "description": "Loyihani boshlashda ishlatiladigan universal CSS Reset qoidalari va o'zgaruvchilar sozlamalari.",
+    "code": "/* 1. Global Box-Sizing & Reset */\n*, *::before, *::after {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\n/* 2. Root Variable Tokens */\n:root {\n  --primary-color: #1f6feb;\n  --background-dark: #0d1117;\n  --text-light: #e6edf3;\n  --border-color: #30363d;\n  --transition-speed: 0.2s;\n}\n\n/* 3. Base styles */\nbody {\n  background-color: var(--background-dark);\n  color: var(--text-light);\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n  line-height: 1.5;\n  overflow-x: hidden;\n}",
+    "category": "Aralash",
+    "tags": ["css", "reset", "variables", "styling"],
+    "createdAt": 1784365000014
+  },
+  {
+    "id": "static-csharp-ef",
+    "title": "C#: Entity Framework Core DbContext Setup",
+    "description": "C# .NET loyihalarida EF Core orqali SQL ma'lumotlar bazasiga ulanish va DbContext-ni sozlash.",
+    "code": "// 1. Model yaratish\npublic class Product {\n    public int Id { get; set; }\n    public string Name { get; set; }\n    public decimal Price { get; set; }\n}\n\n// 2. DbContext class yaratish\nusing Microsoft.EntityFrameworkCore;\n\npublic class AppDbContext : DbContext {\n    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}\n    public DbSet<Product> Products { get; set; }\n}\n\n// 3. Program.cs da ulanishni sozlash\nbuilder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseSqlServer(builder.Configuration.GetConnectionString(\"DefaultConnection\")));",
+    "category": "C#",
+    "tags": ["csharp", "dotnet", "efcore", "database"],
+    "createdAt": 1784365000015
+  },
+  {
+    "id": "static-java-spring",
+    "title": "Java: Spring Boot REST API Controller Template",
+    "description": "Spring Boot-da REST API so'rovlarini qabul qilish va JSON javob qaytarish bo'yicha controller shabloni.",
+    "code": "// 1. Model klassi\npublic class User {\n    private Long id;\n    private String name;\n    // Constructor, Getters va Setters\n}\n\n// 2. REST Controller\nimport org.springframework.web.bind.annotation.*;\nimport java.util.List;\n\n@RestController\n@RequestMapping(\"/api/users\")\npublic class UserController {\n\n    @GetMapping\n    public List<User> getAllUsers() {\n        return List.of(new User(1L, \"Ali\"), new User(2L, \"Vali\"));\n    }\n\n    @PostMapping\n    public String createUser(@RequestBody User user) {\n        return \"User \" + user.getName() + \" successfully created!\";\n    }\n}",
+    "category": "Java",
+    "tags": ["java", "springboot", "controller", "api"],
+    "createdAt": 1784365000016
+  },
+  {
+    "id": "static-python-fastapi",
+    "title": "Python: FastAPI Basic REST API Server",
+    "description": "FastAPI yordamida tezkor, xavfsiz va auto-documentationga ega API serverini yaratish.",
+    "code": "# 1. FastAPI o'rnatish\n# pip install fastapi uvicorn\n\n# 2. main.py server kodi\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass User(BaseModel):\n    id: int\n    name: str\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Welcome to FastAPI Backend!\"}\n\n@app.post(\"/users\")\ndef create_user(user: User):\n    return {\"message\": f\"User {user.name} created successfully!\", \"user\": user}\n\n# 3. Ishga tushirish buyrug'i:\n# uvicorn main:app --reload",
+    "category": "Python",
+    "tags": ["python", "fastapi", "setup", "api"],
+    "createdAt": 1784365000017
   }
 ]

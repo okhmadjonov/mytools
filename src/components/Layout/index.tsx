@@ -20,7 +20,12 @@ const DEFAULT_CATEGORIES = [
   "Docker",
   "VS Code",
   "Frontend",
+  "ReactJS",
+  "Aralash",
   "Backend",
+  "C#",
+  "Java",
+  "Python",
   "Database",
   "Other",
 ];

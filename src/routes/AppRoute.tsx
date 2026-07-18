@@ -7,7 +7,13 @@ const CategoryPageWrapper = () => {
   const { categoryName } = useParams();
   
   const getCategoryFromSlug = (slug: string) => {
-    if (slug === "vs-code") return "VS Code";
+    const s = slug.toLowerCase();
+    if (s === "vs-code") return "VS Code";
+    if (s === "reactjs") return "ReactJS";
+    if (s === "aralash") return "Aralash";
+    if (s === "csharp") return "C#";
+    if (s === "java") return "Java";
+    if (s === "python") return "Python";
     return slug.charAt(0).toUpperCase() + slug.slice(1).replace("-", " ");
   };
 
