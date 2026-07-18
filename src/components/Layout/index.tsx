@@ -64,12 +64,16 @@ const Layout = () => {
       // 1. If we have a Cloud Bin ID, fetch from cloud
       if (storedBinId) {
         try {
-          const res = await fetch(`https://api.npoint.io/documents/${storedBinId}`);
+          const res = await fetch(`https://api.npoint.io/${storedBinId}`);
           if (res.ok) {
             const data = await res.json();
-            if (data.contents && Array.isArray(data.contents)) {
-              setSnippets(data.contents);
-              localStorage.setItem("dev_snippets", JSON.stringify(data.contents));
+            const loadedSnippets = Array.isArray(data) 
+              ? data 
+              : (data && data.contents && Array.isArray(data.contents) ? data.contents : null);
+            
+            if (loadedSnippets) {
+              setSnippets(loadedSnippets);
+              localStorage.setItem("dev_snippets", JSON.stringify(loadedSnippets));
               setIsLoading(false);
               return;
             }
@@ -128,10 +132,10 @@ const Layout = () => {
     const currentBinId = localStorage.getItem("npoint_bin_id");
     if (currentBinId) {
       try {
-        await fetch(`https://api.npoint.io/documents/${currentBinId}`, {
-          method: "PUT",
+        await fetch(`https://api.npoint.io/${currentBinId}`, {
+          method: "POST", // npoint.io accepts POST to update the bin contents
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: newSnippets }),
+          body: JSON.stringify(newSnippets),
         });
       } catch (err) {
         console.warn("Cloud sync failed, will retry next save", err);

@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Modal, Form, Input, Select, Button, Popconfirm, Upload, message, Spin } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  Button,
+  Popconfirm,
+  Upload,
+  message,
+  Spin,
+} from "antd";
 import {
   FiCopy,
   FiCheck,
@@ -22,7 +32,8 @@ const INITIAL_MOCK_SNIPPETS: Snippet[] = [
   {
     id: "mock-1",
     title: "Git: Revert last commit but keep changes",
-    description: "Undoes the last commit, leaving your changes unstaged in the working directory.",
+    description:
+      "Undoes the last commit, leaving your changes unstaged in the working directory.",
     code: "git reset --soft HEAD~1",
     category: "Git",
     tags: ["git", "undo", "commit"],
@@ -31,7 +42,8 @@ const INITIAL_MOCK_SNIPPETS: Snippet[] = [
   {
     id: "mock-2",
     title: "Docker: Remove all unused containers & images",
-    description: "Cleans up your Docker storage by removing dangling containers, volumes, networks, and images.",
+    description:
+      "Cleans up your Docker storage by removing dangling containers, volumes, networks, and images.",
     code: "docker system prune -a --volumes",
     category: "Docker",
     tags: ["docker", "cleanup", "sysadmin"],
@@ -40,7 +52,8 @@ const INITIAL_MOCK_SNIPPETS: Snippet[] = [
   {
     id: "mock-3",
     title: "VS Code: Enable format on save",
-    description: "Add this config snippet to your settings.json to format code automatically.",
+    description:
+      "Add this config snippet to your settings.json to format code automatically.",
     code: '{\n  "editor.formatOnSave": true,\n  "editor.defaultFormatter": "esbenp.prettier-vscode"\n}',
     category: "VS Code",
     tags: ["vscode", "settings", "prettier"],
@@ -68,7 +81,11 @@ const Home = () => {
 
   // Load initial mocks if empty
   useEffect(() => {
-    if (snippets.length === 0 && !localStorage.getItem("dev_snippets") && !isLoading) {
+    if (
+      snippets.length === 0 &&
+      !localStorage.getItem("dev_snippets") &&
+      !isLoading
+    ) {
       saveSnippets(INITIAL_MOCK_SNIPPETS);
     }
   }, [snippets, saveSnippets, isLoading]);
@@ -108,7 +125,10 @@ const Home = () => {
 
   const handleSave = (values: any) => {
     const parsedTags = values.tags
-      ? values.tags.split(",").map((tag: string) => tag.trim()).filter(Boolean)
+      ? values.tags
+          .split(",")
+          .map((tag: string) => tag.trim())
+          .filter(Boolean)
       : [];
 
     if (editingSnippet) {
@@ -122,7 +142,7 @@ const Home = () => {
               code: values.code,
               tags: parsedTags,
             }
-          : s
+          : s,
       );
       saveSnippets(updated, true);
       message.success("Snippet updated successfully!");
@@ -163,10 +183,15 @@ const Home = () => {
   };
 
   const handleExport = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snippets, null, 2));
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(snippets, null, 2));
     const downloadAnchor = document.createElement("a");
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `${activeCategory.toLowerCase()}_snippets.json`);
+    downloadAnchor.setAttribute(
+      "download",
+      `${activeCategory.toLowerCase()}_snippets.json`,
+    );
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -175,7 +200,7 @@ const Home = () => {
   const handleImport = (importedSnippets: Snippet[]) => {
     if (Array.isArray(importedSnippets)) {
       const valid = importedSnippets.every(
-        (s) => s.id && s.title && s.code && s.category
+        (s) => s.id && s.title && s.code && s.category,
       );
       if (valid) {
         saveSnippets(importedSnippets, true);
@@ -208,12 +233,16 @@ const Home = () => {
       return;
     }
     try {
-      const res = await fetch(`https://api.npoint.io/documents/${inputBinId}`);
+      const res = await fetch(`https://api.npoint.io/${inputBinId}`);
       if (!res.ok) throw new Error("Bin not found");
       const data = await res.json();
-      if (data.contents && Array.isArray(data.contents)) {
+      const loadedSnippets = Array.isArray(data)
+        ? data
+        : (data && data.contents && Array.isArray(data.contents) ? data.contents : null);
+
+      if (loadedSnippets) {
         updateBinId(inputBinId);
-        saveSnippets(data.contents, false);
+        saveSnippets(loadedSnippets, false);
         message.success("Successfully synced cloud bin!");
         setIsSyncOpen(false);
       } else {
@@ -242,7 +271,9 @@ const Home = () => {
       s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      s.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
 
     return matchesCategory && matchesSearch;
   });
@@ -382,7 +413,9 @@ const Home = () => {
               <div className={styles.footerLeft}>
                 <span
                   className={styles.languageColorDot}
-                  style={{ backgroundColor: getCategoryColor(snippet.category) }}
+                  style={{
+                    backgroundColor: getCategoryColor(snippet.category),
+                  }}
                 ></span>
                 <span className={styles.languageText}>{snippet.category}</span>
               </div>
@@ -404,7 +437,6 @@ const Home = () => {
         <div className={styles.emptyState}>{t("noSnippets")}</div>
       )}
 
-      {/* Cloud Sync Settings Modal */}
       <Modal
         title="Cloud Sync Settings"
         open={isSyncOpen}
@@ -453,7 +485,11 @@ const Home = () => {
                 className={styles.modalInput}
                 style={{ flex: 1 }}
               />
-              <Button type="primary" onClick={handleConnectBin} className={styles.saveBtn}>
+              <Button
+                type="primary"
+                onClick={handleConnectBin}
+                className={styles.saveBtn}
+              >
                 Link & Sync
               </Button>
             </div>
@@ -461,7 +497,6 @@ const Home = () => {
         </div>
       </Modal>
 
-      {/* Add / Edit Snippet Modal */}
       <Modal
         title={editingSnippet ? t("editSnippet") : t("addSnippet")}
         open={modalType === "add" || modalType === "edit"}
@@ -511,7 +546,10 @@ const Home = () => {
           </Form.Item>
 
           <Form.Item name="tags" label={t("form.tags")}>
-            <Input placeholder="e.g. react, hooks, setup" className={styles.modalInput} />
+            <Input
+              placeholder="e.g. react, hooks, setup"
+              className={styles.modalInput}
+            />
           </Form.Item>
 
           <div className={styles.formActions}>
