@@ -112,6 +112,7 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
               icon={<FiBookOpen className={styles.newIcon} />}
               onClick={handleAddClick}
               className={styles.newBtn}
+              disabled
             >
               New
             </Button>

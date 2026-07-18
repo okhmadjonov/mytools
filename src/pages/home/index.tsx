@@ -326,8 +326,8 @@ const Home = ({ category: propCategory }: HomeProps) => {
         </div>
 
         <div className={styles.pageActions}>
-          <Upload beforeUpload={beforeUpload} showUploadList={false}>
-            <Button icon={<FiUpload />} className={styles.actionBtn}>
+          <Upload beforeUpload={beforeUpload} showUploadList={false} disabled>
+            <Button icon={<FiUpload />} className={styles.actionBtn} disabled>
               {t("import")}
             </Button>
           </Upload>
@@ -336,6 +336,7 @@ const Home = ({ category: propCategory }: HomeProps) => {
             icon={<FiDownload />}
             onClick={handleExport}
             className={styles.actionBtn}
+            disabled
           >
             {t("export")}
           </Button>
@@ -345,6 +346,7 @@ const Home = ({ category: propCategory }: HomeProps) => {
             icon={<FiPlus />}
             onClick={handleAddClick}
             className={styles.addBtn}
+            disabled
           >
             {t("addSnippet")}
           </Button>
