@@ -163,8 +163,8 @@
 
 .categoryItem {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
   padding: 8px 10px;
   border-radius: 6px;
   color: #c9d1d9;
@@ -172,6 +172,13 @@
   font-size: 13px;
   transition: all 0.2s ease;
   user-select: none;
+
+  .categoryItemLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+  }
 
   .categoryIcon {
     font-size: 16px;
@@ -186,12 +193,37 @@
     text-overflow: ellipsis;
   }
 
+  .deleteCategoryBtn {
+    background: transparent;
+    border: none;
+    color: #7d8590;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s, background-color 0.2s;
+
+    &:hover {
+      color: #f85149;
+      background-color: rgba(248, 81, 73, 0.1);
+    }
+  }
+
   &:hover {
     background: rgba(255, 255, 255, 0.04);
     color: #e6edf3;
 
     .categoryIcon {
       color: #e6edf3;
+    }
+
+    .deleteCategoryBtn {
+      opacity: 1;
     }
   }
 
@@ -205,3 +237,39 @@
     }
   }
 }
+
+.addCategoryForm {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #30363d;
+
+  .addCategoryInput {
+    background: #0d1117 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 6px !important;
+    color: #e6edf3 !important;
+    height: 30px !important;
+    font-size: 12px !important;
+
+    :global(.ant-input) {
+      background: transparent !important;
+      color: #e6edf3 !important;
+      font-size: 12px !important;
+
+      &::placeholder {
+        color: #7d8590 !important;
+      }
+    }
+
+    &:hover, &:focus, &:focus-within {
+      border-color: #1f6feb !important;
+      box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.3) !important;
+    }
+
+    .addIcon {
+      color: #7d8590;
+      font-size: 13px;
+    }
+  }
+}
+

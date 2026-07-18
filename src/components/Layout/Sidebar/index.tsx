@@ -10,6 +10,7 @@ import {
   FiDatabase,
   FiGitBranch,
   FiX,
+  FiPlus,
 } from "react-icons/fi";
 import { FaDocker, FaLaptopCode } from "react-icons/fa";
 import styles from "./Sidebar.module.scss";
@@ -18,12 +19,26 @@ interface SidebarProps {
   categories: string[];
   isOpen: boolean;
   onClose: () => void;
+  onAddCategory: (newCat: string) => void;
+  onDeleteCategory: (cat: string) => void;
 }
 
-const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
+const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory }: SidebarProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [filterQuery, setFilterQuery] = useState("");
+  const [newCatInput, setNewCatInput] = useState("");
+
+  const DEFAULT_MAIN_CATEGORIES = [
+    "git",
+    "docker",
+    "vs code",
+    "vscode",
+    "frontend",
+    "backend",
+    "database",
+    "other",
+  ];
 
   // Determine active category based on URL path
   const getActiveCategory = () => {
@@ -44,9 +59,16 @@ const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
   };
 
   const handleAddClick = () => {
-    // Keep search params like modal trigger, but navigate to current path + query params
     navigate(`${pathname}?modal=add`);
     onClose();
+  };
+
+  const handleAddNewCategorySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newCatInput.trim()) {
+      onAddCategory(newCatInput.trim());
+      setNewCatInput("");
+    }
   };
 
   // Filter categories shown in sidebar
@@ -118,20 +140,51 @@ const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
             className={`${styles.categoryItem} ${activeCategory === "all" ? styles.active : ""}`}
             onClick={() => handleCategoryClick("all")}
           >
-            {getCategoryIcon("all")}
-            <span className={styles.repoName}>Bosh sahifa</span>
+            <div className={styles.categoryItemLeft}>
+              {getCategoryIcon("all")}
+              <span className={styles.repoName}>Bosh sahifa</span>
+            </div>
           </li>
-          {filteredCategories.map((cat) => (
-            <li
-              key={cat}
-              className={`${styles.categoryItem} ${activeCategory.toLowerCase() === cat.toLowerCase() ? styles.active : ""}`}
-              onClick={() => handleCategoryClick(cat)}
-            >
-              {getCategoryIcon(cat)}
-              <span className={styles.repoName}>{cat}</span>
-            </li>
-          ))}
+          {filteredCategories.map((cat) => {
+            const isDefault = DEFAULT_MAIN_CATEGORIES.includes(cat.toLowerCase());
+
+            return (
+              <li
+                key={cat}
+                className={`${styles.categoryItem} ${activeCategory.toLowerCase() === cat.toLowerCase() ? styles.active : ""}`}
+                onClick={() => handleCategoryClick(cat)}
+              >
+                <div className={styles.categoryItemLeft}>
+                  {getCategoryIcon(cat)}
+                  <span className={styles.repoName}>{cat}</span>
+                </div>
+                {!isDefault && (
+                  <button
+                    className={styles.deleteCategoryBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteCategory(cat);
+                    }}
+                    title="Delete category"
+                  >
+                    <FiX />
+                  </button>
+                )}
+              </li>
+            );
+          })}
         </ul>
+
+        {/* Dynamic Category Addition Input */}
+        <form onSubmit={handleAddNewCategorySubmit} className={styles.addCategoryForm}>
+          <Input
+            prefix={<FiPlus className={styles.addIcon} />}
+            placeholder="Add category..."
+            value={newCatInput}
+            onChange={(e) => setNewCatInput(e.target.value)}
+            className={styles.addCategoryInput}
+          />
+        </form>
       </aside>
     </>
   );

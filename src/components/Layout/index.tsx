@@ -33,6 +33,42 @@ const Layout = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Dynamic categories state
+  const [categories, setCategories] = useState<string[]>(() => {
+    const stored = localStorage.getItem("dev_categories");
+    return stored ? JSON.parse(stored) : DEFAULT_CATEGORIES;
+  });
+
+  const addCategory = (newCat: string) => {
+    const trimmed = newCat.trim();
+    if (!trimmed) return;
+    
+    if (!categories.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
+      const updated = [...categories, trimmed];
+      setCategories(updated);
+      localStorage.setItem("dev_categories", JSON.stringify(updated));
+      message.success(`New category added: ${trimmed}`);
+    } else {
+      message.warning("This category already exists!");
+    }
+  };
+
+  const deleteCategory = (catToDelete: string) => {
+    const isDefault = DEFAULT_CATEGORIES.some(
+      (c) => c.toLowerCase() === catToDelete.toLowerCase()
+    );
+    if (isDefault) {
+      message.error("Cannot delete default categories!");
+      return;
+    }
+    const updated = categories.filter(
+      (c) => c.toLowerCase() !== catToDelete.toLowerCase()
+    );
+    setCategories(updated);
+    localStorage.setItem("dev_categories", JSON.stringify(updated));
+    message.success(`Category deleted: ${catToDelete}`);
+  };
+
   // Function to initialize a new npoint.io bin
   const initializeNewBin = async (initialData: Snippet[]) => {
     try {
@@ -163,16 +199,20 @@ const Layout = () => {
       <Header onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
       <div className={styles.mainLayout}>
         <Sidebar
-          categories={DEFAULT_CATEGORIES}
+          categories={categories}
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
+          onAddCategory={addCategory}
+          onDeleteCategory={deleteCategory}
         />
         <main className={styles.contentArea}>
           <Outlet
             context={{
               snippets,
               saveSnippets,
-              categories: DEFAULT_CATEGORIES,
+              categories,
+              addCategory,
+              deleteCategory,
               binId,
               isLoading,
             }}
@@ -188,6 +228,8 @@ export type LayoutContextType = {
   snippets: Snippet[];
   saveSnippets: (snippets: Snippet[], triggerDownload?: boolean) => void;
   categories: string[];
+  addCategory: (newCat: string) => void;
+  deleteCategory: (cat: string) => void;
   binId: string | null;
   isLoading: boolean;
 };

@@ -502,3 +502,48 @@
     margin: 0;
   }
 }
+
+.tagBanner {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #c9d1d9;
+
+  strong {
+    color: #58a6ff;
+  }
+}
+
+.clearTagBtn {
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #7d8590;
+  font-size: 11px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #f85149;
+    border-color: #f85149;
+    background: rgba(248, 81, 73, 0.1);
+  }
+}
+
+// Global active tag highlighting in cards
+.tagActive {
+  background-color: #1f6feb !important;
+  color: #ffffff !important;
+  border-color: #388bfd !important;
+}
+

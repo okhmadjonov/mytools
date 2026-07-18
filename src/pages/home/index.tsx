@@ -11,7 +11,16 @@ import {
   FiTerminal,
   FiUpload,
   FiDownload,
+  FiX,
 } from "react-icons/fi";
+import Fuse from "fuse.js";
+import Prism from "prismjs";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-sql";
+
 import type { LayoutContextType, Snippet } from "../../components/Layout";
 import staticSnippets from "../../data/staticSnippets.json";
 import styles from "./Home.module.scss";
@@ -33,10 +42,13 @@ const Home = ({ category: propCategory }: HomeProps) => {
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
+  
+  // Tag filter state
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const activeCategory = propCategory || "all";
   const searchQuery = searchParams.get("search") || "";
-  const modalType = searchParams.get("modal"); // "add" or "edit"
+  const modalType = searchParams.get("modal");
   const editId = searchParams.get("id");
 
   // Load initial mocks if empty
@@ -184,7 +196,7 @@ const Home = ({ category: propCategory }: HomeProps) => {
       }
     };
     reader.readAsText(file);
-    return false; // prevent upload
+    return false;
   };
 
   // Combine static snippets from json + dynamic snippets from database/localstorage
@@ -193,22 +205,79 @@ const Home = ({ category: propCategory }: HomeProps) => {
     ...snippets.filter((s) => !staticSnippets.some((st) => st.id === s.id)),
   ];
 
-  // Filter snippets based on category page
-  const filteredSnippets = combinedSnippets.filter((s) => {
-    const matchesCategory =
-      activeCategory === "all" ||
-      s.category.toLowerCase() === activeCategory.toLowerCase();
+  // 1. Filter snippets by Category page
+  const categoryFiltered = combinedSnippets.filter((s) => {
+    return activeCategory === "all" || s.category.toLowerCase() === activeCategory.toLowerCase();
+  });
 
-    const matchesSearch =
-      s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.tags.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase())
+  // 2. Filter by selected tag if any
+  const tagFiltered = categoryFiltered.filter((s) => {
+    if (!selectedTag) return true;
+    return s.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase());
+  });
+
+  // 3. Filter using Fuse.js (Fuzzy search) if query exists
+  const [filteredSnippets, setFilteredSnippets] = useState<Snippet[]>(tagFiltered);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredSnippets(tagFiltered);
+      return;
+    }
+
+    const fuse = new Fuse(tagFiltered, {
+      keys: ["title", "description", "code", "tags"],
+      threshold: 0.35,
+    });
+
+    const results = fuse.search(searchQuery).map((r) => r.item);
+    setFilteredSnippets(results);
+  }, [searchQuery, selectedTag, activeCategory, snippets]);
+
+  // Syntax Highlighting effect
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [filteredSnippets]);
+
+  // Keyboard Shortcuts Hook
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore shortcuts if user is typing in forms/inputs
+      const activeEl = document.activeElement;
+      const isTyping = activeEl && (
+        activeEl.tagName === "INPUT" || 
+        activeEl.tagName === "TEXTAREA" || 
+        activeEl.getAttribute("contenteditable") === "true"
       );
 
-    return matchesCategory && matchesSearch;
-  });
+      if (isTyping) {
+        // Allow escape to blur/close input
+        if (e.key === "Escape") {
+          (activeEl as HTMLElement).blur();
+        }
+        return;
+      }
+
+      // 1. Press "/" to search
+      if (e.key === "/") {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+
+      // 2. Press "n" or "Ctrl+N" to create new snippet
+      if (e.key.toLowerCase() === "n" || (e.ctrlKey && e.key.toLowerCase() === "n")) {
+        e.preventDefault();
+        handleAddClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchParams, propCategory]);
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
@@ -228,6 +297,15 @@ const Home = ({ category: propCategory }: HomeProps) => {
       default:
         return "#7d8590";
     }
+  };
+
+  const getPrismLanguageClass = (category: string) => {
+    const cat = category.toLowerCase();
+    if (cat === "git" || cat === "docker") return "language-bash";
+    if (cat === "vs code" || cat === "vscode") return "language-json";
+    if (cat === "database") return "language-sql";
+    if (cat === "frontend") return "language-typescript";
+    return "language-javascript";
   };
 
   if (isLoading) {
@@ -273,7 +351,19 @@ const Home = ({ category: propCategory }: HomeProps) => {
         </div>
       </div>
 
-      {activeCategory === "all" && (
+      {/* Selected Tag Active Filter Banner */}
+      {selectedTag && (
+        <div className={styles.tagBanner}>
+          <span>
+            Filtering by tag: <strong>#{selectedTag}</strong>
+          </span>
+          <button onClick={() => setSelectedTag(null)} className={styles.clearTagBtn}>
+            <FiX /> Clear Filter
+          </button>
+        </div>
+      )}
+
+      {activeCategory === "all" && !selectedTag && (
         <div className={styles.guideCard}>
           <h3>{t("guide.title")}</h3>
           <div className={styles.guideSteps}>
@@ -356,7 +446,9 @@ const Home = ({ category: propCategory }: HomeProps) => {
 
               <div className={styles.codeContainer}>
                 <pre>
-                  <code>{snippet.code}</code>
+                  <code className={getPrismLanguageClass(snippet.category)}>
+                    {snippet.code}
+                  </code>
                 </pre>
               </div>
 
@@ -368,12 +460,18 @@ const Home = ({ category: propCategory }: HomeProps) => {
                       backgroundColor: getCategoryColor(snippet.category),
                     }}
                   ></span>
-                  <span className={styles.languageText}>{snippet.category}</span>
+                  <span className={styles.languageText}>
+                    {snippet.category}
+                  </span>
                 </div>
                 {snippet.tags.length > 0 && (
                   <div className={styles.tagsContainer}>
                     {snippet.tags.map((tag) => (
-                      <span key={tag} className={styles.tag}>
+                      <span
+                        key={tag}
+                        className={`${styles.tag} ${selectedTag?.toLowerCase() === tag.toLowerCase() ? styles.tagActive : ""}`}
+                        onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                      >
                         #{tag}
                       </span>
                     ))}
