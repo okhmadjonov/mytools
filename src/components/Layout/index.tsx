@@ -31,6 +31,7 @@ const Layout = () => {
     localStorage.getItem("npoint_bin_id") || "7c41e341ca0e5e5e8227"
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Function to initialize a new npoint.io bin
   const initializeNewBin = async (initialData: Snippet[]) => {
@@ -157,21 +158,15 @@ const Layout = () => {
     }
   };
 
-  const updateBinId = (newId: string) => {
-    if (newId) {
-      localStorage.setItem("npoint_bin_id", newId);
-      setBinId(newId);
-    } else {
-      localStorage.removeItem("npoint_bin_id");
-      setBinId(null);
-    }
-  };
-
   return (
     <div className={styles.appContainer}>
-      <Header />
+      <Header onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
       <div className={styles.mainLayout}>
-        <Sidebar categories={DEFAULT_CATEGORIES} />
+        <Sidebar
+          categories={DEFAULT_CATEGORIES}
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+        />
         <main className={styles.contentArea}>
           <Outlet
             context={{
@@ -179,7 +174,6 @@ const Layout = () => {
               saveSnippets,
               categories: DEFAULT_CATEGORIES,
               binId,
-              updateBinId,
               isLoading,
             }}
           />
@@ -195,6 +189,5 @@ export type LayoutContextType = {
   saveSnippets: (snippets: Snippet[], triggerDownload?: boolean) => void;
   categories: string[];
   binId: string | null;
-  updateBinId: (newId: string) => void;
   isLoading: boolean;
 };

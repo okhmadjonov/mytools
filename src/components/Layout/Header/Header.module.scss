@@ -11,7 +11,32 @@
 
   @media (max-width: 768px) {
     padding: 10px 16px;
-    gap: 10px;
+    gap: 12px;
+  }
+}
+
+.menuToggle {
+  display: none;
+  background: transparent;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  color: #7d8590;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+
+  &:hover {
+    color: #e6edf3;
+    background: #21262d;
+    border-color: #8b949e;
   }
 }
 
@@ -20,8 +45,7 @@
   max-width: 320px;
 
   @media (max-width: 768px) {
-    max-width: 100%;
-    width: 100%;
+    max-width: calc(100% - 150px);
   }
 }
 
@@ -44,7 +68,9 @@
       }
     }
 
-    &:hover, &:focus, &:focus-within {
+    &:hover,
+    &:focus,
+    &:focus-within {
       border-color: #1f6feb !important;
       box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.3) !important;
     }
@@ -73,52 +99,40 @@
   gap: 12px;
 }
 
-.langSelect {
-  width: 90px !important;
-
-  :global(.ant-select-selector) {
-    background-color: #21262d !important;
-    border: 1px solid #30363d !important;
-    border-radius: 6px !important;
-    height: 28px !important;
-    color: #c9d1d9 !important;
-    display: flex;
-    align-items: center;
-    padding: 0 10px 0 8px !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    box-shadow: none !important;
-    transition: background-color 0.2s, border-color 0.2s !important;
-
-    &:hover {
-      background-color: #30363d !important;
-      border-color: #8b949e !important;
-    }
-  }
-
-  :global(.ant-select-selection-item) {
-    color: #c9d1d9 !important;
-    font-weight: 500 !important;
-    line-height: 26px !important;
-  }
-
-  :global(.ant-select-arrow) {
-    color: #7d8590 !important;
-    font-size: 10px !important;
-    right: 8px !important;
-  }
-
-  &:global(.ant-select-focused) :global(.ant-select-selector) {
-    border-color: #8b949e !important;
-    background-color: #30363d !important;
-  }
+.langDropdownContainer {
+  position: relative;
+  display: inline-block;
 }
 
-.langItem {
+.langDropdownTrigger {
+  background-color: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  height: 28px;
+  color: #c9d1d9;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 6px;
-  line-height: 1;
+  padding: 0 8px 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  min-width: 90px;
+
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+
+  &:hover {
+    background-color: #30363d;
+    color: #ffffff;
+  }
+
+  span {
+    line-height: 1;
+  }
 }
 
 .flagIcon {
@@ -129,39 +143,64 @@
   flex-shrink: 0;
 }
 
-.langSelectPopup {
-  background-color: #161b22 !important;
-  border: 1px solid #30363d !important;
-  border-radius: 6px !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
-  padding: 4px 0 !important;
+.chevronIcon {
+  font-size: 11px;
+  color: #efefef;
+  transition: transform 0.2s ease;
 
-  :global(.ant-select-item) {
-    color: #c9d1d9 !important;
-    padding: 5px 12px !important;
-    font-size: 12px !important;
-    transition: background-color 0.15s !important;
-    margin: 0 4px !important;
-    border-radius: 4px !important;
+  &.rotate {
+    transform: rotate(180deg);
+  }
+}
 
-    &:hover {
-      background-color: #21262d !important;
-      color: #ffffff !important;
-    }
+.langDropdownMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background-color: #30363d;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  padding: 4px 0;
+  margin: 0;
+  list-style: none;
+  min-width: 90px;
+  z-index: 1100;
+  animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.langDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #c9d1d9;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+  margin: 0 4px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #21262d;
+    color: #ffffff;
   }
 
-  :global(.ant-select-item-option-active) {
-    background-color: #21262d !important;
-    color: #ffffff !important;
-  }
-
-  :global(.ant-select-item-option-selected) {
-    background-color: #1f6feb !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-
-    &:hover {
-      background-color: #1f6feb !important;
-    }
+  &.selected {
+    background-color: #21262d;
+    color: #ffffff;
+    font-weight: 600;
   }
 }
