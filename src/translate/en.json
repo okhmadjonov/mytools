@@ -1,0 +1,27 @@
+{
+  "translation": {
+    "title": "DevTools Vault",
+    "searchPlaceholder": "Search snippets or settings...",
+    "addSnippet": "Add Snippet",
+    "editSnippet": "Edit Snippet",
+    "delete": "Delete",
+    "edit": "Edit",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "export": "Export JSON",
+    "import": "Import JSON",
+    "all": "All",
+    "categories": "Categories",
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "code": "Code / Configuration",
+      "category": "Category",
+      "tags": "Tags (comma separated)",
+      "save": "Save",
+      "cancel": "Cancel",
+      "required": "This field is required!"
+    },
+    "noSnippets": "No snippets found. Add some to get started!"
+  }
+}

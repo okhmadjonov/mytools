@@ -1,0 +1,27 @@
+{
+  "translation": {
+    "title": "DevTools Vault",
+    "searchPlaceholder": "Snippet yoki sozlamalarni qidirish...",
+    "addSnippet": "Kod qo'shish",
+    "editSnippet": "Kodni tahrirlash",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "copy": "Nusxa olish",
+    "copied": "Nusxalandi!",
+    "export": "Eksport",
+    "import": "Import",
+    "all": "Barchasi",
+    "categories": "Toifalar",
+    "form": {
+      "title": "Sarlavha",
+      "description": "Tavsif",
+      "code": "Kod / Sozlama",
+      "category": "Toifa",
+      "tags": "Teglar (vergul bilan ajratilgan)",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish",
+      "required": "Ushbu maydon to'ldirilishi shart!"
+    },
+    "noSnippets": "Snippetlar topilmadi. Boshlash uchun yangi kod qo'shing!"
+  }
+}
