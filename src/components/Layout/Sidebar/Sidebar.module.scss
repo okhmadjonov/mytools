@@ -1,7 +1,9 @@
 .sidebar {
   width: 320px;
-  background: #0d1117;
-  border-right: 1px solid #30363d;
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(48, 54, 61, 0.7);
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
@@ -21,9 +23,9 @@
     z-index: 1100;
     width: 280px;
     transform: translateX(-100%);
-    border-right: 1px solid #30363d;
+    border-right: 1px solid rgba(48, 54, 61, 0.7);
     box-shadow: 0 0 24px rgba(0, 0, 0, 0.5);
-    background: #0d1117;
+    background: rgba(13, 17, 23, 0.85);
     padding: 20px 16px;
 
     &.open {

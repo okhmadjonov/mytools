@@ -44,6 +44,21 @@ const Layout = () => {
     return stored ? JSON.parse(stored) : DEFAULT_CATEGORIES;
   });
 
+  // Starred snippets state
+  const [starredIds, setStarredIds] = useState<string[]>(() => {
+    const stored = localStorage.getItem("dev_starred_ids");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const toggleStar = (id: string) => {
+    const updated = starredIds.includes(id)
+      ? starredIds.filter((x) => x !== id)
+      : [...starredIds, id];
+    setStarredIds(updated);
+    localStorage.setItem("dev_starred_ids", JSON.stringify(updated));
+    message.success(starredIds.includes(id) ? "Snippet unstarred!" : "Snippet starred!");
+  };
+
   const addCategory = (newCat: string) => {
     const trimmed = newCat.trim();
     if (!trimmed) return;
@@ -218,6 +233,8 @@ const Layout = () => {
               categories,
               addCategory,
               deleteCategory,
+              starredIds,
+              toggleStar,
               binId,
               isLoading,
             }}
@@ -235,6 +252,8 @@ export type LayoutContextType = {
   categories: string[];
   addCategory: (newCat: string) => void;
   deleteCategory: (cat: string) => void;
+  starredIds: string[];
+  toggleStar: (id: string) => void;
   binId: string | null;
   isLoading: boolean;
 };

@@ -14,6 +14,7 @@ import {
   FiChevronRight,
   FiChevronDown,
   FiSliders,
+  FiStar,
 } from "react-icons/fi";
 import { FaDocker, FaLaptopCode, FaReact, FaCoffee, FaPython, FaCode } from "react-icons/fa";
 import styles from "./Sidebar.module.scss";
@@ -69,6 +70,7 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
     if (pathname === "/vs-code") return "vs code";
     if (pathname === "/reactjs") return "reactjs";
     if (pathname === "/csharp") return "c#";
+    if (pathname === "/starred") return "starred";
     return pathname.substring(1); // e.g. "/git" -> "git"
   };
 
@@ -226,6 +228,17 @@ const Sidebar = ({ categories, isOpen, onClose, onAddCategory, onDeleteCategory 
             <div className={styles.categoryItemLeft}>
               {getCategoryIcon("all")}
               <span className={styles.repoName}>Bosh sahifa</span>
+            </div>
+          </li>
+
+          {/* Starred */}
+          <li
+            className={`${styles.categoryItem} ${activeCategory === "starred" ? styles.active : ""}`}
+            onClick={() => handleCategoryClick("starred")}
+          >
+            <div className={styles.categoryItemLeft}>
+              <FiStar className={styles.categoryIcon} style={{ color: activeCategory === "starred" ? "#ffc107" : "#7d8590" }} />
+              <span className={styles.repoName}>Tanlanganlar</span>
             </div>
           </li>
 

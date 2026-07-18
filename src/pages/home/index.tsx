@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Modal, Form, Input, Select, Button, Popconfirm, Upload, message, Spin } from "antd";
+import { Modal, Form, Input, Select, Button, Popconfirm, Upload, message } from "antd";
 import {
   FiCopy,
   FiCheck,
@@ -12,7 +12,9 @@ import {
   FiUpload,
   FiDownload,
   FiX,
+  FiStar,
 } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
 import Fuse from "fuse.js";
 import Prism from "prismjs";
 import "prismjs/components/prism-bash";
@@ -35,7 +37,7 @@ interface HomeProps {
 
 const Home = ({ category: propCategory }: HomeProps) => {
   const { t } = useTranslation();
-  const { snippets, saveSnippets, categories, isLoading } =
+  const { snippets, saveSnippets, categories, starredIds, toggleStar, isLoading } =
     useOutletContext<LayoutContextType>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
@@ -199,6 +201,32 @@ const Home = ({ category: propCategory }: HomeProps) => {
     return false;
   };
 
+  const getFileExtension = (category: string) => {
+    const cat = category.toLowerCase();
+    if (cat === "python") return ".py";
+    if (cat === "c#" || cat === "csharp") return ".cs";
+    if (cat === "java") return ".java";
+    if (cat === "reactjs") return ".tsx";
+    if (cat === "frontend" || cat === "aralash") return ".js";
+    if (cat === "database") return ".sql";
+    if (cat === "docker") return ".yml";
+    if (cat === "git") return ".sh";
+    return ".txt";
+  };
+
+  const handleDownloadFile = (snippet: Snippet) => {
+    const element = document.createElement("a");
+    const file = new Blob([snippet.code], { type: "text/plain;charset=utf-8" });
+    element.href = URL.createObjectURL(file);
+    const ext = getFileExtension(snippet.category);
+    const safeTitle = snippet.title.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    element.download = `${safeTitle}${ext}`;
+    document.body.appendChild(element);
+    element.click();
+    element.remove();
+    message.success("Fayl yuklab olindi!");
+  };
+
   // Combine static snippets from json + dynamic snippets from database/localstorage
   const combinedSnippets = [
     ...staticSnippets,
@@ -207,6 +235,9 @@ const Home = ({ category: propCategory }: HomeProps) => {
 
   // 1. Filter snippets by Category page
   const categoryFiltered = combinedSnippets.filter((s) => {
+    if (activeCategory === "starred") {
+      return starredIds.includes(s.id);
+    }
     return activeCategory === "all" || s.category.toLowerCase() === activeCategory.toLowerCase();
   });
 
@@ -232,7 +263,7 @@ const Home = ({ category: propCategory }: HomeProps) => {
 
     const results = fuse.search(searchQuery).map((r) => r.item);
     setFilteredSnippets(results);
-  }, [searchQuery, selectedTag, activeCategory, snippets]);
+  }, [searchQuery, selectedTag, activeCategory, snippets, starredIds]);
 
   // Syntax Highlighting effect
   useEffect(() => {
@@ -242,7 +273,6 @@ const Home = ({ category: propCategory }: HomeProps) => {
   // Keyboard Shortcuts Hook
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore shortcuts if user is typing in forms/inputs
       const activeEl = document.activeElement;
       const isTyping = activeEl && (
         activeEl.tagName === "INPUT" || 
@@ -251,14 +281,12 @@ const Home = ({ category: propCategory }: HomeProps) => {
       );
 
       if (isTyping) {
-        // Allow escape to blur/close input
         if (e.key === "Escape") {
           (activeEl as HTMLElement).blur();
         }
         return;
       }
 
-      // 1. Press "/" to search
       if (e.key === "/") {
         e.preventDefault();
         const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
@@ -268,7 +296,6 @@ const Home = ({ category: propCategory }: HomeProps) => {
         }
       }
 
-      // 2. Press "n" or "Ctrl+N" to create new snippet
       if (e.key.toLowerCase() === "n" || (e.ctrlKey && e.key.toLowerCase() === "n")) {
         e.preventDefault();
         handleAddClick();
@@ -290,8 +317,19 @@ const Home = ({ category: propCategory }: HomeProps) => {
         return "#007acc";
       case "frontend":
         return "#3b82f6";
+      case "reactjs":
+        return "#61dafb";
+      case "aralash":
+        return "#e91e63";
       case "backend":
         return "#10b981";
+      case "c#":
+      case "csharp":
+        return "#178600";
+      case "java":
+        return "#b07219";
+      case "python":
+        return "#3572a5";
       case "database":
         return "#8b5cf6";
       default:
@@ -304,15 +342,32 @@ const Home = ({ category: propCategory }: HomeProps) => {
     if (cat === "git" || cat === "docker") return "language-bash";
     if (cat === "vs code" || cat === "vscode") return "language-json";
     if (cat === "database") return "language-sql";
-    if (cat === "frontend") return "language-typescript";
+    if (cat === "frontend" || cat === "reactjs") return "language-typescript";
     return "language-javascript";
   };
 
   if (isLoading) {
     return (
-      <div className={styles.loadingContainer}>
-        <Spin size="large" />
-        <p>Syncing with cloud vault...</p>
+      <div className={styles.homeContainer}>
+        <div className={styles.pageHeader}>
+          <div className={styles.skeletonTitleHeader}></div>
+        </div>
+        <div className={styles.grid}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className={`${styles.card} ${styles.skeletonCard}`}>
+              <div className={styles.skeletonHeader}>
+                <div className={styles.skeletonAvatar}></div>
+                <div className={styles.skeletonMeta}>
+                  <div className={styles.skeletonLineShort}></div>
+                  <div className={styles.skeletonLineLong}></div>
+                </div>
+              </div>
+              <div className={styles.skeletonDesc}></div>
+              <div className={styles.skeletonCode}></div>
+              <div className={styles.skeletonFooter}></div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -321,7 +376,7 @@ const Home = ({ category: propCategory }: HomeProps) => {
     <div className={styles.homeContainer}>
       <div className={styles.pageHeader}>
         <div className={styles.titleArea}>
-          <h2>{activeCategory === "all" ? t("all") : activeCategory}</h2>
+          <h2>{activeCategory === "all" ? t("all") : (activeCategory === "starred" ? "Tanlanganlar" : activeCategory)}</h2>
           <span className={styles.countBadge}>{filteredSnippets.length}</span>
         </div>
 
@@ -388,9 +443,16 @@ const Home = ({ category: propCategory }: HomeProps) => {
       <div className={styles.grid}>
         {filteredSnippets.map((snippet) => {
           const isStatic = staticSnippets.some((st) => st.id === snippet.id);
+          const isStarred = starredIds.includes(snippet.id);
 
           return (
-            <div key={snippet.id} className={styles.card}>
+            <div
+              key={snippet.id}
+              className={styles.card}
+              style={{
+                "--glow-color": getCategoryColor(snippet.category),
+              } as React.CSSProperties}
+            >
               <div className={styles.cardHeader}>
                 <div className={styles.meta}>
                   <div className={styles.cardTitleArea}>
@@ -404,6 +466,26 @@ const Home = ({ category: propCategory }: HomeProps) => {
                   <h4 className={styles.snippetTitle}>{snippet.title}</h4>
                 </div>
                 <div className={styles.actions}>
+                  {/* Star/Favorite Button */}
+                  <button
+                    onClick={() => toggleStar(snippet.id)}
+                    className={styles.starIconBtn}
+                    title={isStarred ? "Tanlanganlardan olib tashlash" : "Tanlanganlarga qo'shish"}
+                  >
+                    {isStarred ? <FaStar style={{ color: "#ffc107" }} /> : <FiStar />}
+                  </button>
+
+
+
+                  {/* Download Code Button */}
+                  <button
+                    onClick={() => handleDownloadFile(snippet)}
+                    className={styles.downloadFileBtn}
+                    title="Fayl ko'rinishida yuklab olish"
+                  >
+                    <FiDownload />
+                  </button>
+
                   <button
                     onClick={() => handleCopy(snippet.code, snippet.id)}
                     className={styles.starBtn}
@@ -472,6 +554,9 @@ const Home = ({ category: propCategory }: HomeProps) => {
                       <span
                         key={tag}
                         className={`${styles.tag} ${selectedTag?.toLowerCase() === tag.toLowerCase() ? styles.tagActive : ""}`}
+                        style={{
+                          "--tag-color": getCategoryColor(snippet.category),
+                        } as React.CSSProperties}
                         onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
                       >
                         #{tag}
@@ -486,8 +571,16 @@ const Home = ({ category: propCategory }: HomeProps) => {
       </div>
 
       {filteredSnippets.length === 0 && (
-        <div className={styles.emptyState}>{t("noSnippets")}</div>
+        <div className={styles.emptyStateContainer}>
+          <div className={styles.emptyStateIcon}>
+            <FiTerminal />
+          </div>
+          <h3>{t("noSnippets")}</h3>
+          <p>Qidiruv shartlariga mos keladigan ma'lumotlar topilmadi. Boshqa kalit so'zlarni sinab ko'ring.</p>
+        </div>
       )}
+
+
 
       <Modal
         title={editingSnippet ? t("editSnippet") : t("addSnippet")}
