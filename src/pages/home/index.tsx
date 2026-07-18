@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Modal, Form, Input, Select, Button, Popconfirm, Upload, message } from "antd";
-import { FiCopy, FiCheck, FiEdit3, FiTrash2, FiUpload, FiDownload, FiPlus, FiSearch } from "react-icons/fi";
+import {
+  FiCopy,
+  FiCheck,
+  FiEdit3,
+  FiTrash2,
+  FiPlus,
+  FiTerminal,
+  FiUpload,
+  FiDownload,
+} from "react-icons/fi";
 import type { LayoutContextType, Snippet } from "../../components/Layout";
 import styles from "./Home.module.scss";
 
@@ -110,7 +119,7 @@ const Home = () => {
             }
           : s
       );
-      saveSnippets(updated);
+      saveSnippets(updated, true);
       message.success("Snippet updated successfully!");
     } else {
       const newSnippet: Snippet = {
@@ -122,7 +131,7 @@ const Home = () => {
         tags: parsedTags,
         createdAt: Date.now(),
       };
-      saveSnippets([newSnippet, ...snippets]);
+      saveSnippets([newSnippet, ...snippets], true);
       message.success("Snippet added successfully!");
     }
     handleCloseModal();
@@ -130,7 +139,7 @@ const Home = () => {
 
   const handleDelete = (id: string) => {
     const updated = snippets.filter((s) => s.id !== id);
-    saveSnippets(updated);
+    saveSnippets(updated, true);
     message.success("Snippet deleted successfully!");
   };
 
@@ -145,17 +154,6 @@ const Home = () => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set("modal", "edit");
     newParams.set("id", snippet.id);
-    setSearchParams(newParams);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const newParams = new URLSearchParams(searchParams);
-    if (value) {
-      newParams.set("search", value);
-    } else {
-      newParams.delete("search");
-    }
     setSearchParams(newParams);
   };
 
@@ -175,7 +173,7 @@ const Home = () => {
         (s) => s.id && s.title && s.code && s.category
       );
       if (valid) {
-        saveSnippets(importedSnippets);
+        saveSnippets(importedSnippets, true);
       } else {
         throw new Error("Invalid format");
       }
@@ -216,12 +214,12 @@ const Home = () => {
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
       case "git":
-        return "#ef4444";
+        return "#f05032";
       case "docker":
-        return "#0ea5e9";
+        return "#2496ed";
       case "vs code":
       case "vscode":
-        return "#6366f1";
+        return "#007acc";
       case "frontend":
         return "#3b82f6";
       case "backend":
@@ -229,7 +227,7 @@ const Home = () => {
       case "database":
         return "#8b5cf6";
       default:
-        return "#64748b";
+        return "#7d8590";
     }
   };
 
@@ -239,17 +237,6 @@ const Home = () => {
         <div className={styles.titleArea}>
           <h2>{activeCategory === "all" ? t("all") : activeCategory}</h2>
           <span className={styles.countBadge}>{filteredSnippets.length}</span>
-        </div>
-
-        <div className={styles.searchArea}>
-          <Input
-            prefix={<FiSearch className={styles.searchIcon} />}
-            placeholder={t("searchPlaceholder")}
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className={styles.searchInput}
-            allowClear
-          />
         </div>
 
         <div className={styles.pageActions}>
@@ -283,23 +270,34 @@ const Home = () => {
           <div key={snippet.id} className={styles.card}>
             <div className={styles.cardHeader}>
               <div className={styles.meta}>
-                <span
-                  className={styles.categoryBadge}
-                  style={{
-                    backgroundColor: `${getCategoryColor(snippet.category)}12`,
-                    color: getCategoryColor(snippet.category),
-                    borderColor: `${getCategoryColor(snippet.category)}25`,
-                  }}
-                >
-                  {snippet.category}
-                </span>
-                <span className={styles.cardTitle}>{snippet.title}</span>
+                <div className={styles.cardTitleArea}>
+                  <span className={styles.repoIcon}>
+                    <FiTerminal />
+                  </span>
+                  <span className={styles.cardTitle}>
+                    {snippet.category.toLowerCase().replace(" ", "-")}
+                  </span>
+                </div>
+                <h4 className={styles.snippetTitle}>{snippet.title}</h4>
               </div>
               <div className={styles.actions}>
                 <button
+                  onClick={() => handleCopy(snippet.code, snippet.id)}
+                  className={styles.starBtn}
+                >
+                  {copiedId === snippet.id ? (
+                    <>
+                      <FiCheck className={styles.checkIcon} /> Copied!
+                    </>
+                  ) : (
+                    <>
+                      <FiCopy /> Copy
+                    </>
+                  )}
+                </button>
+                <button
                   onClick={() => handleEditClick(snippet)}
-                  className={styles.actionBtnIcon}
-                  title={t("edit")}
+                  className={styles.editBtn}
                 >
                   <FiEdit3 />
                 </button>
@@ -310,7 +308,7 @@ const Home = () => {
                   cancelText={t("form.cancel")}
                   okButtonProps={{ danger: true }}
                 >
-                  <button className={styles.actionBtnIcon} title={t("delete")}>
+                  <button className={styles.deleteBtn}>
                     <FiTrash2 />
                   </button>
                 </Popconfirm>
@@ -325,27 +323,26 @@ const Home = () => {
               <pre>
                 <code>{snippet.code}</code>
               </pre>
-              <button
-                className={styles.copyBtn}
-                onClick={() => handleCopy(snippet.code, snippet.id)}
-              >
-                {copiedId === snippet.id ? (
-                  <FiCheck className={styles.checkIcon} />
-                ) : (
-                  <FiCopy />
-                )}
-              </button>
             </div>
 
-            {snippet.tags.length > 0 && (
-              <div className={styles.tagsContainer}>
-                {snippet.tags.map((tag) => (
-                  <span key={tag} className={styles.tag}>
-                    #{tag}
-                  </span>
-                ))}
+            <div className={styles.cardFooter}>
+              <div className={styles.footerLeft}>
+                <span
+                  className={styles.languageColorDot}
+                  style={{ backgroundColor: getCategoryColor(snippet.category) }}
+                ></span>
+                <span className={styles.languageText}>{snippet.category}</span>
               </div>
-            )}
+              {snippet.tags.length > 0 && (
+                <div className={styles.tagsContainer}>
+                  {snippet.tags.map((tag) => (
+                    <span key={tag} className={styles.tag}>
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

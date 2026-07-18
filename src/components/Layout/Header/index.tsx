@@ -1,6 +1,7 @@
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Select } from "antd";
-import { FiCode } from "react-icons/fi";
+import { Input, Select } from "antd";
+import { FiSearch } from "react-icons/fi";
 import { uzFlag, ruFlag, usaFlag } from "../../../assets/icons";
 import styles from "./Header.module.scss";
 
@@ -8,6 +9,20 @@ const { Option } = Select;
 
 const Header = () => {
   const { t, i18n } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const searchQuery = searchParams.get("search") || "";
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set("search", value);
+    } else {
+      newParams.delete("search");
+    }
+    setSearchParams(newParams);
+  };
 
   const handleLangChange = (value: string) => {
     i18n.changeLanguage(value);
@@ -16,14 +31,21 @@ const Header = () => {
 
   return (
     <header className={styles.header}>
-      <div className={styles.logoSection}>
-        <div className={styles.logoIcon}>
-          <FiCode />
+      <div className={styles.centerSection}>
+        <div className={styles.searchContainer}>
+          <Input
+            prefix={<FiSearch className={styles.searchIcon} />}
+            placeholder={t("searchPlaceholder")}
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className={styles.searchInput}
+            suffix={<span className={styles.searchShortcut}>/</span>}
+            allowClear
+          />
         </div>
-        <h1>{t("title")}</h1>
       </div>
 
-      <div className={styles.actionsSection}>
+      <div className={styles.rightSection}>
         <Select
           defaultValue={i18n.language}
           onChange={handleLangChange}

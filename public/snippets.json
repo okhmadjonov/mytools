@@ -1,0 +1,29 @@
+[
+  {
+    "id": "mock-1",
+    "title": "Git: Revert last commit but keep changes",
+    "description": "Undoes the last commit, leaving your changes unstaged in the working directory.",
+    "code": "git reset --soft HEAD~1",
+    "category": "Git",
+    "tags": ["git", "undo", "commit"],
+    "createdAt": 1718000000000
+  },
+  {
+    "id": "mock-2",
+    "title": "Docker: Remove all unused containers & images",
+    "description": "Cleans up your Docker storage by removing dangling containers, volumes, networks, and images.",
+    "code": "docker system prune -a --volumes",
+    "category": "Docker",
+    "tags": ["docker", "cleanup", "sysadmin"],
+    "createdAt": 1718000010000
+  },
+  {
+    "id": "mock-3",
+    "title": "VS Code: Enable format on save",
+    "description": "Add this config snippet to your settings.json to format code automatically.",
+    "code": "{\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\"\n}",
+    "category": "VS Code",
+    "tags": ["vscode", "settings", "prettier"],
+    "createdAt": 1718000020000
+  }
+]
