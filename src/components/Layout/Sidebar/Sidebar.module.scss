@@ -90,6 +90,22 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 8px;
+    padding-bottom: 6px;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 2px;
+    }
+  }
 }
 
 .categoryItem {
@@ -103,6 +119,12 @@
   font-size: 13px;
   transition: all 0.2s ease;
   user-select: none;
+
+  @media (max-width: 768px) {
+    white-space: nowrap;
+    padding: 6px 12px;
+    flex-shrink: 0;
+  }
 
   .repoIndicator {
     width: 14px;

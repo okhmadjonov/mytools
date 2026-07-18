@@ -322,10 +322,10 @@
 }
 
 .modalInput, .modalTextArea {
-  background: #0d1117 !important;
-  border: 1px solid #30363d !important;
+  background: #faf6ee !important;
+  border: 1px solid #cbd5e1 !important;
   border-radius: 6px !important;
-  color: #e6edf3 !important;
+  color: #0f172a !important;
 
   &:hover, &:focus {
     border-color: #1f6feb !important;
@@ -335,17 +335,21 @@
 
 .modalSelect {
   :global(.ant-select-selector) {
-    background: #0d1117 !important;
-    border: 1px solid #30363d !important;
+    background: #faf6ee !important;
+    border: 1px solid #cbd5e1 !important;
     border-radius: 6px !important;
-    color: #e6edf3 !important;
+    color: #0f172a !important;
     height: 38px !important;
     display: flex;
     align-items: center;
   }
 
+  :global(.ant-select-selection-item) {
+    color: #0f172a !important;
+  }
+
   :global(.ant-select-arrow) {
-    color: #7d8590 !important;
+    color: #475569 !important;
   }
 }
 
@@ -381,4 +385,65 @@
       background: #2ea44f !important;
     }
   }
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  color: #7d8590;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.syncModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.syncSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.syncHelpText {
+  font-size: 13px;
+  color: #7d8590;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.syncIdRow, .syncInputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.syncCopyBtn {
+  background: #21262d !important;
+  border: 1px solid #30363d !important;
+  color: #c9d1d9 !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 6px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: #30363d !important;
+    border-color: #8b949e !important;
+    color: #ffffff !important;
+  }
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #30363d;
+  margin: 8px 0;
 }
