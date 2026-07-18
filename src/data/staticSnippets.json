@@ -1,0 +1,119 @@
+[
+  {
+    "id": "static-git-setup",
+    "title": "Git: Repository Setup & Push Guidelines",
+    "description": "Yangi git repozitoriy yaratilishi va origin serverga ulanishi yoki mavjud repozitoriyning push qilinishi.",
+    "code": "Quick setup — if you’ve done this kind of thing before\nor\thttps://github.com/okhmadjonov/demoapp.git\nGet started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.\n\n…or create a new repository on the command line\necho \"# demoapp\" >> README.md\ngit init\ngit add README.md\ngit commit -m \"first commit\"\ngit branch -M master\ngit remote add origin https://github.com/okhmadjonov/demoapp.git\ngit push -u origin master\n\n…or push an existing repository from the command line\ngit remote add origin https://github.com/okhmadjonov/demoapp.git\ngit branch -M master\ngit push -u origin master",
+    "category": "Git",
+    "tags": ["git", "setup", "repository", "github"],
+    "createdAt": 1784365000000
+  },
+  {
+    "id": "static-docker-setup",
+    "title": "Docker: Beginner Step-by-Step Guide & Compose Settings",
+    "description": "Docker loyihasini Dockerfile va Docker Compose yordamida sozlash hamda konteynerlarni boshqarish bo'yicha boshlang'ich qo'llanma.",
+    "code": "# 1-qadam: Ilova uchun Dockerfile yaratish\nFROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nEXPOSE 3000\nCMD [\"npm\", \"start\"]\n\n# 2-qadam: docker-compose.yml faylini yaratish (Konteynerlarni birga ishga tushirish)\nversion: '3.8'\nservices:\n  web:\n    build: .\n    ports:\n      - \"3000:3000\"\n    volumes:\n      - .:/app\n      - /app/node_modules\n    environment:\n      - NODE_ENV=development\n    depends_on:\n      - db\n\n  db:\n    image: postgres:15-alpine\n    restart: always\n    environment:\n      POSTGRES_USER: devuser\n      POSTGRES_PASSWORD: devpassword\n      POSTGRES_DB: devdb\n    ports:\n      - \"5432:5432\"\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n\nvolumes:\n  pgdata:\n\n# 3-qadam: Loyihani ishga tushirish buyruqlari\n# Konteynerlarni fonda ishga tushirish:\ndocker compose up -d\n\n# Konteynerlarni to'xtatish va o'chirish:\ndocker compose down",
+    "category": "Docker",
+    "tags": ["docker", "compose", "setup", "beginner"],
+    "createdAt": 1784365000001
+  },
+  {
+    "id": "static-vscode-setup",
+    "title": "VS Code: Recommended Extensions & Settings for Beginners",
+    "description": "Loyihada kod yozishni osonlashtirish uchun tavsiya etiladigan extension-lar va settings.json sozlamalari.",
+    "code": "// 1. Tavsiya etiladigan asosiy VS Code extension-lar (kengaytmalar):\n// - Prettier (Kodni avtomatik chiroyli formatlash uchun)\n// - ESLint (Koddagi sintaktik xatolarni aniqlash uchun)\n// - GitLens (Git tarixini qulay kuzatish uchun)\n// - Auto Rename Tag (HTML/JSX teglarini avtomatik o'zgartirish uchun)\n// - Material Icon Theme (Loyiha fayllariga chiroyli ikonkalar berish uchun)\n\n// 2. Standart settings.json sozlamalari (F1 -> Preferences: Open User Settings JSON):\n{\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\",\n  \"editor.tabSize\": 2,\n  \"editor.wordWrap\": \"on\",\n  \"editor.minimap.enabled\": false,\n  \"editor.bracketPairColorization.enabled\": true,\n  \"editor.fontFamily\": \"'Fira Code', Consolas, Monaco, monospace\",\n  \"editor.fontLigatures\": true,\n  \"workbench.iconTheme\": \"material-icon-theme\",\n  \"files.autoSave\": \"afterDelay\",\n  \"files.autoSaveDelay\": 1000\n}",
+    "category": "VS Code",
+    "tags": ["vscode", "settings", "extensions", "beginner"],
+    "createdAt": 1784365000002
+  },
+  {
+    "id": "static-deps-1",
+    "title": "Frontend: Standart Production Dependencies",
+    "description": "Loyihada tez-tez ishlatiladigan asosiy production kutubxonalar (antd, redux, react-query, recharts, three.js, vanta, lottie va boshqalar) ro'yxati.",
+    "code": "npm i @ant-design/icons @react-map/uzbekistan @rematch/core @rematch/persist @tanstack/react-query antd antd-mask-input axios dayjs deep-equal docx-preview i18next lottie-react lucide-react path react react-datepicker react-dom react-highlight-words react-i18next react-icons react-input-mask react-redux react-router-dom react-toastify recharts redux sass styled-components three vanta",
+    "category": "Frontend",
+    "tags": ["npm", "setup", "dependencies", "frontend"],
+    "createdAt": 1784365000003
+  },
+  {
+    "id": "static-deps-2",
+    "title": "Frontend: Standart DevDependencies",
+    "description": "Loyihani yaratishda ishlatiladigan devDependencies (eslint, typescript, vite va typings paketlari) ro'yxati.",
+    "code": "npm i -D @eslint/js @types/node @types/react @types/react-datepicker @types/react-dom @types/three @vitejs/plugin-react eslint eslint-plugin-react-hooks eslint-plugin-react-refresh globals react-is typescript typescript-eslint vite vite-plugin-svgr",
+    "category": "Frontend",
+    "tags": ["npm", "setup", "devDependencies", "frontend"],
+    "createdAt": 1784365000004
+  },
+  {
+    "id": "static-deps-3",
+    "title": "Frontend: Vite & TypeScript Path Aliases Setup (@/)",
+    "description": "Loyihada importlarni osonlashtirish uchun '@/' aliasini sozlash (vite.config.ts va tsconfig.json).",
+    "code": "// 1. vite.config.ts fayliga qo'shing:\nimport path from \"path\";\nimport { defineConfig } from \"vite\";\nimport react from \"@vitejs/plugin-react\";\n\nexport default defineConfig({\n  plugins: [react()],\n  resolve: {\n    alias: {\n      \"@\": path.resolve(__dirname, \"./src\"),\n    },\n  },\n});\n\n// 2. tsconfig.json fayliga (compilerOptions ostiga) qo'shing:\n{\n  \"compilerOptions\": {\n    \"baseUrl\": \".\",\n    \"paths\": {\n      \"@/*\": [\"src/*\"]\n    }\n  }\n}",
+    "category": "Frontend",
+    "tags": ["vite", "typescript", "alias", "setup"],
+    "createdAt": 1784365000005
+  },
+  {
+    "id": "static-deps-4",
+    "title": "Frontend: Custom React Hooks (useLocalStorage & useDebounce)",
+    "description": "Keng tarqalgan, foydali custom React hook shablonlari.",
+    "code": "// 1. useLocalStorage.ts (State-ni xotirada saqlash)\nimport { useState } from \"react\";\n\nexport function useLocalStorage<T>(key: string, initialValue: T) {\n  const [storedValue, setStoredValue] = useState<T>(() => {\n    try {\n      const item = window.localStorage.getItem(key);\n      return item ? JSON.parse(item) : initialValue;\n    } catch (error) {\n      return initialValue;\n    }\n  });\n\n  const setValue = (value: T | ((val: T) => T)) => {\n    try {\n      const valueToStore = value instanceof Function ? value(storedValue) : value;\n      setStoredValue(valueToStore);\n      window.localStorage.setItem(key, JSON.stringify(valueToStore));\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  return [storedValue, setValue] as const;\n}\n\n// 2. useDebounce.ts (Qidiruv yuklamasini kamaytirish)\nimport { useState, useEffect } from \"react\";\n\nexport function useDebounce<T>(value: T, delay: number): T {\n  const [debouncedValue, setDebouncedValue] = useState<T>(value);\n\n  useEffect(() => {\n    const handler = setTimeout(() => {\n      setDebouncedValue(value);\n    }, delay);\n\n    return () => clearTimeout(handler);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n",
+    "category": "Frontend",
+    "tags": ["react", "hooks", "custom", "frontend"],
+    "createdAt": 1784365000006
+  },
+  {
+    "id": "static-backend-1",
+    "title": "Backend: Basic ExpressJS Server Setup",
+    "description": "JSON middleware, CORS, dotenv va standart routingga ega Express server.",
+    "code": "const express = require('express');\nconst cors = require('cors');\nrequire('dotenv').config();\n\nconst app = express();\nconst PORT = process.env.PORT || 5000;\n\n// Middlewares\napp.use(cors());\napp.use(express.json());\n\n// Basic Route\napp.get('/', (req, res) => {\n  res.json({ message: 'Welcome to the Backend API!' });\n});\n\n// Start Server\napp.listen(PORT, () => {\n  console.log(`Server is running on port ${PORT}`);\n});",
+    "category": "Backend",
+    "tags": ["express", "node", "setup", "backend"],
+    "createdAt": 1784365000007
+  },
+  {
+    "id": "static-backend-2",
+    "title": "Backend: Mongoose MongoDB Connection",
+    "description": "Mongoose yordamida MongoDB-ga xavfsiz ulanish kodi.",
+    "code": "const mongoose = require('mongoose');\nrequire('dotenv').config();\n\nconst connectDB = async () => {\n  try {\n    const conn = await mongoose.connect(process.env.MONGO_URI, {\n      useNewUrlParser: true,\n      useUnifiedTopology: true,\n    });\n    console.log(`MongoDB Connected: ${conn.connection.host}`);\n  } catch (error) {\n    console.error(`Error: ${error.message}`);\n    process.exit(1); // Exit process with failure\n  }\n};\n\nmodule.exports = connectDB;",
+    "category": "Backend",
+    "tags": ["mongoose", "mongodb", "connection", "backend"],
+    "createdAt": 1784365000008
+  },
+  {
+    "id": "static-backend-3",
+    "title": "Backend: JWT Authentication Middleware",
+    "description": "So'rovlarni JWT token orqali tekshiruvchi Express middleware.",
+    "code": "const jwt = require('jsonwebtoken');\n\nconst protect = (req, res, next) => {\n  let token;\n\n  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {\n    try {\n      // Get token from header\n      token = req.headers.authorization.split(' ')[1];\n\n      // Verify token\n      const decoded = jwt.verify(token, process.env.JWT_SECRET);\n\n      // Add user from payload to request\n      req.user = decoded;\n\n      next();\n    } catch (error) {\n      res.status(401).json({ message: 'Not authorized, token failed' });\n    }\n  }\n\n  if (!token) {\n    res.status(401).json({ message: 'Not authorized, no token' });\n  }\n};\n\nmodule.exports = protect;",
+    "category": "Backend",
+    "tags": ["jwt", "auth", "middleware", "backend"],
+    "createdAt": 1784365000009
+  },
+  {
+    "id": "static-db-1",
+    "title": "Database: Basic SQL & PostgreSQL CRUD Queries",
+    "description": "SQL ma'lumotlar bazasida jadval yaratish, ma'lumot qo'shish, o'qish, tahrirlash va birlashtirish (JOIN) buyruqlari.",
+    "code": "-- 1. Jadval yaratish (Create Table)\nCREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  username VARCHAR(50) UNIQUE NOT NULL,\n  email VARCHAR(100) UNIQUE NOT NULL,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- 2. Ma'lumot qo'shish (Insert)\nINSERT INTO users (username, email) \nVALUES ('dev_user', 'dev@example.com');\n\n-- 3. Ma'lumotni o'qish (Select & Join)\nSELECT users.id, users.username, profiles.bio \nFROM users\nINNER JOIN profiles ON users.id = profiles.user_id;\n\n-- 4. Ma'lumotni yangilash (Update)\nUPDATE users \nSET email = 'new_email@example.com' \nWHERE id = 1;\n\n-- 5. Ma'lumotni o'chirish (Delete)\nDELETE FROM users \nWHERE id = 1;",
+    "category": "Database",
+    "tags": ["sql", "postgres", "queries", "database"],
+    "createdAt": 1784365000010
+  },
+  {
+    "id": "static-db-2",
+    "title": "Database: Mongoose Schema Model (MongoDB)",
+    "description": "MongoDB uchun Mongoose yordamida validation va pre-save hashingga ega User modelini yaratish.",
+    "code": "const mongoose = require('mongoose');\nconst bcrypt = require('bcryptjs');\n\nconst UserSchema = new mongoose.Schema({\n  username: {\n    type: String,\n    required: [true, 'Please add a username'],\n    unique: true,\n    trim: true\n  },\n  email: {\n    type: String,\n    required: [true, 'Please add an email'],\n    unique: true,\n    match: [/\\S+@\\S+\\.\\S+/, 'Please add a valid email']\n  },\n  password: {\n    type: String,\n    required: [true, 'Please add a password'],\n    minlength: 6,\n    select: false\n  }\n}, {\n  timestamps: true\n});\n\n// Hash password before saving\nUserSchema.pre('save', async function(next) {\n  if (!this.isModified('password')) next();\n  const salt = await bcrypt.genSalt(10);\n  this.password = await bcrypt.hash(this.password, salt);\n});\n\nmodule.exports = mongoose.model('User', UserSchema);",
+    "category": "Database",
+    "tags": ["mongoose", "mongodb", "schema", "database"],
+    "createdAt": 1784365000011
+  },
+  {
+    "id": "static-other-readme",
+    "title": "Other: Professional README.md Template",
+    "description": "Har qanday GitHub loyihasi uchun standart, professional README.md shabloni.",
+    "code": "# 🚀 Project Title\n\nShort description of what this project does and who it's for.\n\n## 🛠️ Tech Stack\n\n- **Frontend:** React, TypeScript, SCSS\n- **State Management:** Redux, Rematch\n- **Styling:** CSS Modules, Ant Design\n\n## 📦 Installation\n\nClone the repository and install the dependencies:\n\n```bash\ngit clone https://github.com/username/project.git\ncd project\nnpm install\n```\n\n## 🚀 Running the App\n\nStart the development server:\n\n```bash\nnpm run dev\n```\n\nBuild the production bundle:\n\n```bash\nnpm run build\n```\n\n## 📄 License\n\nThis project is licensed under the MIT License.",
+    "category": "Other",
+    "tags": ["readme", "markdown", "template", "other"],
+    "createdAt": 1784365000012
+  }
+]

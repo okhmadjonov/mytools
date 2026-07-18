@@ -22,6 +22,15 @@
       "cancel": "Cancel",
       "required": "This field is required!"
     },
-    "noSnippets": "No snippets found. Add some to get started!"
+    "noSnippets": "No snippets found. Add some to get started!",
+    "guide": {
+      "title": "💡 DevTools Vault — Quick Guide",
+      "step1Title": "1. Add Snippet (+ Add Snippet):",
+      "step1Desc": "Click the green '+ Add Snippet' button on the top right or 'New' on the left menu to add your codes/configurations.",
+      "step2Title": "2. Search & Filter:",
+      "step2Desc": "Find snippets quickly using the search bar on top, or filter them by category using the left menu.",
+      "step3Title": "3. Copy & Manage:",
+      "step3Desc": "Use 'Copy' to copy code blocks, edit or delete snippets using the icons. Data is synced to the cloud automatically!"
+    }
   }
 }

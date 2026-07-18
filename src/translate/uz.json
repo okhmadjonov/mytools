@@ -22,6 +22,15 @@
       "cancel": "Bekor qilish",
       "required": "Ushbu maydon to'ldirilishi shart!"
     },
-    "noSnippets": "Snippetlar topilmadi. Boshlash uchun yangi kod qo'shing!"
+    "noSnippets": "Snippetlar topilmadi. Boshlash uchun yangi kod qo'shing!",
+    "guide": {
+      "title": "💡 DevTools Vault — Tezkor qo'llanma",
+      "step1Title": "1. Kod qo'shish (+ Add Snippet):",
+      "step1Desc": "O'ng yuqoridagi yashil '+ Add Snippet' yoki chap menyudagi 'New' tugmasini bosib kodingiz yoki sozlamalaringizni yozing.",
+      "step2Title": "2. Qidirish va Saralash:",
+      "step2Desc": "Tepadagi qidiruv panelidan kalit so'zlar bo'yicha tezkor toping yoki chap menyudan toifalar bo'yicha saralang.",
+      "step3Title": "3. Nusxa olish va Boshqarish:",
+      "step3Desc": "Har bir kartochkadagi 'Copy' orqali koddan foydalaning, 'Tahrirlash' yoki 'O'chirish' amallarini bajaring. Ma'lumotlar avtomatik bulutga (npoint) sinxronizatsiya bo'ladi!"
+    }
   }
 }

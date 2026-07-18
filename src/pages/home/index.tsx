@@ -1,17 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  Modal,
-  Form,
-  Input,
-  Select,
-  Button,
-  Popconfirm,
-  Upload,
-  message,
-  Spin,
-} from "antd";
+import { Modal, Form, Input, Select, Button, Popconfirm, Upload, message, Spin } from "antd";
 import {
   FiCopy,
   FiCheck,
@@ -23,44 +13,18 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import type { LayoutContextType, Snippet } from "../../components/Layout";
+import staticSnippets from "../../data/staticSnippets.json";
 import styles from "./Home.module.scss";
 
 const { TextArea } = Input;
 
-const INITIAL_MOCK_SNIPPETS: Snippet[] = [
-  {
-    id: "mock-1",
-    title: "Git: Revert last commit but keep changes",
-    description:
-      "Undoes the last commit, leaving your changes unstaged in the working directory.",
-    code: "git reset --soft HEAD~1",
-    category: "Git",
-    tags: ["git", "undo", "commit"],
-    createdAt: Date.now() - 100000,
-  },
-  {
-    id: "mock-2",
-    title: "Docker: Remove all unused containers & images",
-    description:
-      "Cleans up your Docker storage by removing dangling containers, volumes, networks, and images.",
-    code: "docker system prune -a --volumes",
-    category: "Docker",
-    tags: ["docker", "cleanup", "sysadmin"],
-    createdAt: Date.now() - 80000,
-  },
-  {
-    id: "mock-3",
-    title: "VS Code: Enable format on save",
-    description:
-      "Add this config snippet to your settings.json to format code automatically.",
-    code: '{\n  "editor.formatOnSave": true,\n  "editor.defaultFormatter": "esbenp.prettier-vscode"\n}',
-    category: "VS Code",
-    tags: ["vscode", "settings", "prettier"],
-    createdAt: Date.now() - 60000,
-  },
-];
+const INITIAL_MOCK_SNIPPETS: Snippet[] = [];
 
-const Home = () => {
+interface HomeProps {
+  category?: string;
+}
+
+const Home = ({ category: propCategory }: HomeProps) => {
   const { t } = useTranslation();
   const { snippets, saveSnippets, categories, isLoading } =
     useOutletContext<LayoutContextType>();
@@ -70,7 +34,7 @@ const Home = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
 
-  const activeCategory = searchParams.get("category") || "all";
+  const activeCategory = propCategory || "all";
   const searchQuery = searchParams.get("search") || "";
   const modalType = searchParams.get("modal"); // "add" or "edit"
   const editId = searchParams.get("id");
@@ -138,7 +102,7 @@ const Home = () => {
               code: values.code,
               tags: parsedTags,
             }
-          : s,
+          : s
       );
       saveSnippets(updated, true);
       message.success("Snippet updated successfully!");
@@ -186,7 +150,7 @@ const Home = () => {
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute(
       "download",
-      `${activeCategory.toLowerCase()}_snippets.json`,
+      `${activeCategory.toLowerCase()}_snippets.json`
     );
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
@@ -196,7 +160,7 @@ const Home = () => {
   const handleImport = (importedSnippets: Snippet[]) => {
     if (Array.isArray(importedSnippets)) {
       const valid = importedSnippets.every(
-        (s) => s.id && s.title && s.code && s.category,
+        (s) => s.id && s.title && s.code && s.category
       );
       if (valid) {
         saveSnippets(importedSnippets, true);
@@ -223,9 +187,14 @@ const Home = () => {
     return false; // prevent upload
   };
 
+  // Combine static snippets from json + dynamic snippets from database/localstorage
+  const combinedSnippets = [
+    ...staticSnippets,
+    ...snippets.filter((s) => !staticSnippets.some((st) => st.id === s.id)),
+  ];
 
-
-  const filteredSnippets = snippets.filter((s) => {
+  // Filter snippets based on category page
+  const filteredSnippets = combinedSnippets.filter((s) => {
     const matchesCategory =
       activeCategory === "all" ||
       s.category.toLowerCase() === activeCategory.toLowerCase();
@@ -235,7 +204,7 @@ const Home = () => {
       s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.tags.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+        tag.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
     return matchesCategory && matchesSearch;
@@ -304,88 +273,116 @@ const Home = () => {
         </div>
       </div>
 
-      <div className={styles.grid}>
-        {filteredSnippets.map((snippet) => (
-          <div key={snippet.id} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <div className={styles.meta}>
-                <div className={styles.cardTitleArea}>
-                  <span className={styles.repoIcon}>
-                    <FiTerminal />
-                  </span>
-                  <span className={styles.cardTitle}>
-                    {snippet.category.toLowerCase().replace(" ", "-")}
-                  </span>
-                </div>
-                <h4 className={styles.snippetTitle}>{snippet.title}</h4>
-              </div>
-              <div className={styles.actions}>
-                <button
-                  onClick={() => handleCopy(snippet.code, snippet.id)}
-                  className={styles.starBtn}
-                >
-                  {copiedId === snippet.id ? (
-                    <>
-                      <FiCheck className={styles.checkIcon} /> Copied!
-                    </>
-                  ) : (
-                    <>
-                      <FiCopy /> Copy
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={() => handleEditClick(snippet)}
-                  className={styles.editBtn}
-                >
-                  <FiEdit3 />
-                </button>
-                <Popconfirm
-                  title={t("delete") + "?"}
-                  onConfirm={() => handleDelete(snippet.id)}
-                  okText={t("delete")}
-                  cancelText={t("form.cancel")}
-                  okButtonProps={{ danger: true }}
-                >
-                  <button className={styles.deleteBtn}>
-                    <FiTrash2 />
-                  </button>
-                </Popconfirm>
-              </div>
+      {activeCategory === "all" && (
+        <div className={styles.guideCard}>
+          <h3>{t("guide.title")}</h3>
+          <div className={styles.guideSteps}>
+            <div className={styles.guideStep}>
+              <strong>{t("guide.step1Title")}</strong>
+              <p>{t("guide.step1Desc")}</p>
             </div>
-
-            {snippet.description && (
-              <p className={styles.cardDesc}>{snippet.description}</p>
-            )}
-
-            <div className={styles.codeContainer}>
-              <pre>
-                <code>{snippet.code}</code>
-              </pre>
+            <div className={styles.guideStep}>
+              <strong>{t("guide.step2Title")}</strong>
+              <p>{t("guide.step2Desc")}</p>
             </div>
-
-            <div className={styles.cardFooter}>
-              <div className={styles.footerLeft}>
-                <span
-                  className={styles.languageColorDot}
-                  style={{
-                    backgroundColor: getCategoryColor(snippet.category),
-                  }}
-                ></span>
-                <span className={styles.languageText}>{snippet.category}</span>
-              </div>
-              {snippet.tags.length > 0 && (
-                <div className={styles.tagsContainer}>
-                  {snippet.tags.map((tag) => (
-                    <span key={tag} className={styles.tag}>
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+            <div className={styles.guideStep}>
+              <strong>{t("guide.step3Title")}</strong>
+              <p>{t("guide.step3Desc")}</p>
             </div>
           </div>
-        ))}
+        </div>
+      )}
+
+      <div className={styles.grid}>
+        {filteredSnippets.map((snippet) => {
+          const isStatic = staticSnippets.some((st) => st.id === snippet.id);
+
+          return (
+            <div key={snippet.id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div className={styles.meta}>
+                  <div className={styles.cardTitleArea}>
+                    <span className={styles.repoIcon}>
+                      <FiTerminal />
+                    </span>
+                    <span className={styles.cardTitle}>
+                      {snippet.category.toLowerCase().replace(" ", "-")}
+                    </span>
+                  </div>
+                  <h4 className={styles.snippetTitle}>{snippet.title}</h4>
+                </div>
+                <div className={styles.actions}>
+                  <button
+                    onClick={() => handleCopy(snippet.code, snippet.id)}
+                    className={styles.starBtn}
+                  >
+                    {copiedId === snippet.id ? (
+                      <>
+                        <FiCheck className={styles.checkIcon} /> Copied!
+                      </>
+                    ) : (
+                      <>
+                        <FiCopy /> Copy
+                      </>
+                    )}
+                  </button>
+                  {!isStatic && (
+                    <>
+                      <button
+                        onClick={() => handleEditClick(snippet)}
+                        className={styles.editBtn}
+                      >
+                        <FiEdit3 />
+                      </button>
+                      <Popconfirm
+                        title={t("delete") + "?"}
+                        onConfirm={() => handleDelete(snippet.id)}
+                        okText={t("delete")}
+                        cancelText={t("form.cancel")}
+                        okButtonProps={{ danger: true }}
+                      >
+                        <button className={styles.deleteBtn}>
+                          <FiTrash2 />
+                        </button>
+                      </Popconfirm>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {snippet.description && (
+                <p className={styles.cardDesc}>{snippet.description}</p>
+              )}
+
+              <div className={styles.codeContainer}>
+                <pre>
+                  <code>{snippet.code}</code>
+                </pre>
+              </div>
+
+              <div className={styles.cardFooter}>
+                <div className={styles.footerLeft}>
+                  <span
+                    className={styles.languageColorDot}
+                    style={{
+                      backgroundColor: getCategoryColor(snippet.category),
+                    }}
+                  ></span>
+                  <span className={styles.languageText}>{snippet.category}</span>
+                </div>
+                {snippet.tags.length > 0 && (
+                  <div className={styles.tagsContainer}>
+                    {snippet.tags.map((tag) => (
+                      <span key={tag} className={styles.tag}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {filteredSnippets.length === 0 && (

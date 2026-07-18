@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Input, Button } from "antd";
 import {
   FiBookOpen,
@@ -21,25 +21,31 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeCategory = searchParams.get("category") || "all";
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [filterQuery, setFilterQuery] = useState("");
 
+  // Determine active category based on URL path
+  const getActiveCategory = () => {
+    if (pathname === "/") return "all";
+    if (pathname === "/vs-code") return "vs code";
+    return pathname.substring(1); // e.g. "/git" -> "git"
+  };
+
+  const activeCategory = getActiveCategory();
+
   const handleCategoryClick = (category: string) => {
-    const newParams = new URLSearchParams(searchParams);
     if (category === "all") {
-      newParams.delete("category");
+      navigate("/");
     } else {
-      newParams.set("category", category);
+      navigate(`/${category.toLowerCase().replace(" ", "-")}`);
     }
-    setSearchParams(newParams);
     onClose(); // Close mobile drawer on selection
   };
 
   const handleAddClick = () => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("modal", "add");
-    setSearchParams(newParams);
+    // Keep search params like modal trigger, but navigate to current path + query params
+    navigate(`${pathname}?modal=add`);
     onClose();
   };
 
@@ -73,7 +79,6 @@ const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
 
   return (
     <>
-      {/* Mobile Sidebar Backdrop overlay */}
       {isOpen && <div className={styles.backdrop} onClick={onClose}></div>}
 
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}>
@@ -88,7 +93,11 @@ const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
             >
               New
             </Button>
-            <button className={styles.closeBtn} onClick={onClose} aria-label="Close menu">
+            <button
+              className={styles.closeBtn}
+              onClick={onClose}
+              aria-label="Close menu"
+            >
               <FiX />
             </button>
           </div>
@@ -110,7 +119,7 @@ const Sidebar = ({ categories, isOpen, onClose }: SidebarProps) => {
             onClick={() => handleCategoryClick("all")}
           >
             {getCategoryIcon("all")}
-            <span className={styles.repoName}>barchasi</span>
+            <span className={styles.repoName}>Bosh sahifa</span>
           </li>
           {filteredCategories.map((cat) => (
             <li
